@@ -8,7 +8,8 @@ namespace ADOEmployee_Payroll
         {
             Console.WriteLine("Welcome To ADO Employee Payroll Assignment");
             EmployeePayRollOperation emp = new EmployeePayRollOperation();
-            emp.GetAllEmployeeDetails();       
+            emp.GetAllEmployeeDetails();
+            emp.Display();
         }
     }
 }
