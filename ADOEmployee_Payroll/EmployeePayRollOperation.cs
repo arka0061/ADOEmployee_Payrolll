@@ -14,15 +14,25 @@ namespace ADOEmployee_Payroll
         SqlConnection sqlConnection = new SqlConnection(connectionString);
 
         public List<Employee> GetAllEmployeeDetails()
-        {
-            SqlCommand com = new SqlCommand("spGetAllEmployeeDetails", sqlConnection);
-            com.CommandType = CommandType.StoredProcedure;
-            SqlDataAdapter da = new SqlDataAdapter(com);
-            DataTable dt = new DataTable();
-
-            sqlConnection.Open();
-            da.Fill(dt);
-            sqlConnection.Close();
+        {           
+                SqlCommand com = new SqlCommand("spGetAllEmployeeDetails", sqlConnection);
+                com.CommandType = CommandType.StoredProcedure;
+                SqlDataAdapter da = new SqlDataAdapter(com);
+                DataTable dt = new DataTable();
+            try
+            {
+                sqlConnection.Open();
+                da.Fill(dt);
+                sqlConnection.Close();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            finally
+            {
+                sqlConnection.Close();
+            }
             foreach (DataRow dr in dt.Rows)
             {
                 EmpList.Add(
@@ -43,6 +53,7 @@ namespace ADOEmployee_Payroll
                     });
             }
             return EmpList;
+           
         }
         public void Display()
         {
@@ -62,7 +73,96 @@ namespace ADOEmployee_Payroll
                 Console.WriteLine("----------End of Record of an Employee---------------------");
             }
         }
+        public void ADDEmployeeDetails()
+        {
+            try
+            {
+                SqlCommand com = new SqlCommand("spAddAllEmployeeDetails", sqlConnection);
+                com.CommandType = CommandType.StoredProcedure;
+                sqlConnection.Open();
+                com.Parameters.AddWithValue("@Name", "Terissa");
+                com.Parameters.AddWithValue("@StartDate", "2021-10-20");
+                com.Parameters.AddWithValue("@Gender", 'F');
+                com.Parameters.AddWithValue("@EmployeeDepartment", "Yoga");
+                com.Parameters.AddWithValue("@EmployeePhoneNumber", 9845689876);
+                com.Parameters.AddWithValue("@BasicPay", 67000);
+                com.Parameters.AddWithValue("@Deduction", 3000);
+                com.Parameters.AddWithValue("@TaxablePay", 2000);
+                com.Parameters.AddWithValue("@IncomeTax", 0);
+                com.Parameters.AddWithValue("@NetPay", 62000);
+                int i = com.ExecuteNonQuery();
+                if (i >= 1)
+                {
+                    Console.WriteLine("Employee Added Sucessfully");
+                }
+                sqlConnection.Close();
+            }
+            catch(Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            finally
+            {
+                sqlConnection.Close();
+            }
+        }
+        public void Choice()
+        {
+            int choice=10;
+            Console.WriteLine("Enter 1 to Display DataBase");
+            Console.WriteLine("Enter 2 to Add a new Employee");
+            Console.WriteLine("Enter 3 to Updatee Employee Details");
+            Console.WriteLine("Enter 0 to Stop Execution");
+            while (choice != 0)
+            {
+                choice = Convert.ToInt32(Console.ReadLine());
+                switch (choice)
+                {
+                    case 1:
+                        Display();
+                        break;
 
+                    case 2:
+                        ADDEmployeeDetails();
+                        break;
+
+                    case 3:
+                        UpdateEmployeeDetails();
+                        break;
+                }
+            }
+        }
+        public void  UpdateEmployeeDetails()
+        {
+            Employee emp = new Employee();
+            emp.Name = "Terissa";
+            emp.BasicPay = 3000000;
+            try
+            {
+                this.sqlConnection.Open();
+                SqlCommand sqlCommand = new SqlCommand("spUpdateEmployeeDetails", sqlConnection);
+                sqlCommand.CommandType = CommandType.StoredProcedure;
+                sqlCommand.Parameters.AddWithValue("@Name", emp.Name);
+                sqlCommand.Parameters.AddWithValue("@BasicPay", emp.BasicPay);
+                int check = sqlCommand.ExecuteNonQuery();
+                if (check == 1)
+                {
+                    Console.WriteLine("BasicPay is updated!");
+                }
+                else
+                {
+                    Console.WriteLine("BasicPay Updation Failed!");
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            finally
+            {
+                this.sqlConnection.Close();
+            }
+        }
     }
 }
 
