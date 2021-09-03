@@ -14,16 +14,15 @@ namespace ADOEmployee_Payroll
         SqlConnection sqlConnection = new SqlConnection(connectionString);
 
         public List<Employee> GetAllEmployeeDetails()
-        {           
-                SqlCommand com = new SqlCommand("spGetAllEmployeeDetails", sqlConnection);
-                com.CommandType = CommandType.StoredProcedure;
-                SqlDataAdapter da = new SqlDataAdapter(com);
-                DataTable dt = new DataTable();
+        {
+            SqlCommand com = new SqlCommand("spGetAllEmployeeDetails", sqlConnection);
+            com.CommandType = CommandType.StoredProcedure;
+            SqlDataAdapter da = new SqlDataAdapter(com);
+            DataTable dt = new DataTable();
             try
             {
                 sqlConnection.Open();
                 da.Fill(dt);
-                sqlConnection.Close();
             }
             catch (Exception e)
             {
@@ -50,10 +49,11 @@ namespace ADOEmployee_Payroll
                         TaxabalePay = Convert.ToDouble(dr["TaxablePay"]),
                         IncomeTax = Convert.ToDouble(dr["IncomeTax"]),
                         NetPay = Convert.ToInt32(dr["NetPay"]),
-                    });
+                        ActiveCheck = Convert.ToInt32(dr["ActiveCheck"])
+                    }) ;
             }
             return EmpList;
-           
+
         }
         public void Display()
         {
@@ -70,6 +70,7 @@ namespace ADOEmployee_Payroll
                 Console.WriteLine("TaxablePay is : " + item.TaxabalePay);
                 Console.WriteLine("IncomeTax is : " + item.IncomeTax);
                 Console.WriteLine("NetPay is : " + item.NetPay);
+                Console.WriteLine("ActiveCheck is : " + item.ActiveCheck);
                 Console.WriteLine("----------End of Record of an Employee---------------------");
             }
         }
@@ -97,7 +98,7 @@ namespace ADOEmployee_Payroll
                 }
                 sqlConnection.Close();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 throw new Exception(e.Message);
             }
@@ -108,10 +109,12 @@ namespace ADOEmployee_Payroll
         }
         public void Choice()
         {
-            int choice=10;
+            int choice = 10;
             Console.WriteLine("Enter 1 to Display DataBase");
             Console.WriteLine("Enter 2 to Add a new Employee");
-            Console.WriteLine("Enter 3 to Updatee Employee Details");
+            Console.WriteLine("Enter 3 to Update Employee Details");
+            Console.WriteLine("Enter 4 to Delete Employee Details");
+            Console.WriteLine("Enter 5 to Delete Employee Details By Status");
             Console.WriteLine("Enter 0 to Stop Execution");
             while (choice != 0)
             {
@@ -129,10 +132,18 @@ namespace ADOEmployee_Payroll
                     case 3:
                         UpdateEmployeeDetails();
                         break;
+
+                    case 4:
+                        DeleteEmployeeDetails();
+                        break;
+
+                    case 5:
+                        CheckStatusActive();
+                        break;
                 }
             }
         }
-        public void  UpdateEmployeeDetails()
+        public void UpdateEmployeeDetails()
         {
             Employee emp = new Employee();
             emp.Name = "Terissa";
@@ -163,7 +174,92 @@ namespace ADOEmployee_Payroll
                 this.sqlConnection.Close();
             }
         }
+        public void DeleteEmployeeDetails()
+        {
+            Employee emp = new Employee();
+            emp.ID = 6;
+            try
+            {
+                this.sqlConnection.Open();
+                SqlCommand sqlCommand = new SqlCommand("spDeleteEmployeeDetails", sqlConnection);
+                sqlCommand.CommandType = CommandType.StoredProcedure;
+                sqlCommand.Parameters.AddWithValue("@Id", emp.ID);
+                int check = sqlCommand.ExecuteNonQuery();
+                if (check == 1)
+                {
+                    Console.WriteLine("Employee is Deleted!");
+                }
+                else
+                {
+                    Console.WriteLine("Employee Deletion Failed!");
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            finally
+            {
+                this.sqlConnection.Close();
+            }
+        }
+        public void CheckStatusActive()
+        {
+            List<Employee> inactive = new List<Employee>();
+            foreach (var item in EmpList)
+            {
+                if(item.ActiveCheck==0)
+                {
+                    Console.WriteLine("Employee :" + item.Name + " is inactive");
+                    inactive.Add(item);
+                }
+            }
+            Console.WriteLine("Do u want to Delete inactive Records?'Y' Or 'N'");
+            char ch = Convert.ToChar(Console.ReadLine());
+            if(ch.Equals('Y'))
+            {
+                foreach(var item in inactive)
+                {
+                    DeleteEmployeeDetailsByStatus(item.ActiveCheck);
+
+                }
+            }
+            else
+            {
+                return;
+            }
+        }
+        public void DeleteEmployeeDetailsByStatus(int status)
+        {
+            Employee emp = new Employee();
+            emp.ActiveCheck = status;
+            try
+            {
+                this.sqlConnection.Open();
+                SqlCommand sqlCommand = new SqlCommand("spDeleteEmployeeByStatus", sqlConnection);
+                sqlCommand.CommandType = CommandType.StoredProcedure;
+                sqlCommand.Parameters.AddWithValue("@ActiveCheck", emp.ActiveCheck);
+                int check = sqlCommand.ExecuteNonQuery();
+                if (check == 1)
+                {
+                    Console.WriteLine("Employee is Deleted!");
+                }
+                else
+                {
+                    Console.WriteLine("Employee Deletion Failed!");
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            finally
+            {
+                this.sqlConnection.Close();
+            }
+        }
     }
 }
+
 
 

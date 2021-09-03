@@ -18,5 +18,7 @@ namespace ADOEmployee_Payroll
         public double IncomeTax { get; set; }
         public double NetPay { get; set; }
 
+        public int ActiveCheck { get; set; }
+
     }
 }
