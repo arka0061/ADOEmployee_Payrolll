@@ -50,7 +50,7 @@ namespace ADOEmployee_Payroll
                         IncomeTax = Convert.ToDouble(dr["IncomeTax"]),
                         NetPay = Convert.ToInt32(dr["NetPay"]),
                         ActiveCheck = Convert.ToInt32(dr["ActiveCheck"])
-                    }) ;
+                    });
             }
             return EmpList;
 
@@ -208,7 +208,7 @@ namespace ADOEmployee_Payroll
             List<Employee> inactive = new List<Employee>();
             foreach (var item in EmpList)
             {
-                if(item.ActiveCheck==0)
+                if (item.ActiveCheck == 0)
                 {
                     Console.WriteLine("Employee :" + item.Name + " is inactive");
                     inactive.Add(item);
@@ -216,9 +216,9 @@ namespace ADOEmployee_Payroll
             }
             Console.WriteLine("Do u want to Delete inactive Records?'Y' Or 'N'");
             char ch = Convert.ToChar(Console.ReadLine());
-            if(ch.Equals('Y'))
+            if (ch.Equals('Y'))
             {
-                foreach(var item in inactive)
+                foreach (var item in inactive)
                 {
                     DeleteEmployeeDetailsByStatus(item.ActiveCheck);
 
@@ -260,6 +260,7 @@ namespace ADOEmployee_Payroll
         }
     }
 }
+
 
 
 
