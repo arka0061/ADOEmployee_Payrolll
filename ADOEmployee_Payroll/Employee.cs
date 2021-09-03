@@ -8,7 +8,7 @@ namespace ADOEmployee_Payroll
     {
         public int ID { get; set; }
         public string Name { get; set; }
-        public string StartDate { get; set; }
+        public DateTime StartDate { get; set; }
         public char Gender { get; set; }
         public string EmployeeDepartment { get; set; }
         public double EmployeePhoneNumber { get; set; }

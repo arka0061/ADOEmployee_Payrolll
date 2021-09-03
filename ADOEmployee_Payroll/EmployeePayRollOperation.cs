@@ -40,7 +40,7 @@ namespace ADOEmployee_Payroll
                     {
                         ID = Convert.ToInt32(dr["Id"]),
                         Name = Convert.ToString(dr["Name"]),
-                        StartDate = Convert.ToString(dr["StartDate"]),
+                        StartDate = Convert.ToDateTime(dr["StartDate"]),
                         Gender = Convert.ToChar(dr["Gender"]),
                         EmployeeDepartment = Convert.ToString(dr["EmployeeDepartment"]),
                         EmployeePhoneNumber = Convert.ToDouble(dr["EmployeePhoneNumber"]),
@@ -139,6 +139,10 @@ namespace ADOEmployee_Payroll
 
                     case 5:
                         CheckStatusActive();
+                        break;
+
+                    case 6:
+                        RangeWithDate();
                         break;
                 }
             }
@@ -258,6 +262,47 @@ namespace ADOEmployee_Payroll
                 this.sqlConnection.Close();
             }
         }
+        public void RangeWithDate()
+        {
+            Employee employee = new Employee();
+            DateTime StartDate = new DateTime(2021, 02, 20);
+            try
+            {
+                this.sqlConnection.Open();
+                SqlCommand sqlCommand = new SqlCommand("spDateRangeEmployee", sqlConnection);
+                sqlCommand.CommandType = CommandType.StoredProcedure;
+                sqlCommand.Parameters.AddWithValue("@StartDate", StartDate);            
+                SqlDataReader reader = sqlCommand.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        employee.ID = reader.GetInt32(0);
+                        employee.Name = reader.GetString(1);
+                        employee.Gender = reader.GetChar(1);
+                        employee.EmployeePhoneNumber = reader.GetDouble(3);
+                        employee.EmployeeDepartment = reader.GetString(20);
+                        employee.BasicPay = reader.GetInt32(6);
+                        employee.Deduction = reader.GetDouble(7);
+                        employee.TaxabalePay = reader.GetDouble(8);
+                        employee.IncomeTax = reader.GetDouble(9);
+                        employee.NetPay = reader.GetDouble(10);
+                        employee.StartDate = reader.GetDateTime(11);
+                        Console.WriteLine(employee.Name);
+                    }
+                }
+                sqlConnection.Close();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            finally
+            {
+                this.sqlConnection.Close();
+            }
+        }
+
     }
 }
 
